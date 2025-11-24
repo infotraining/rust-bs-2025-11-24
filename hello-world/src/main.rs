@@ -18,6 +18,16 @@ fn input(prompt: &str) -> String {
 }
 
 fn main() {
+    let big_number = std::i32::MAX;
+    
+    //big_number += 1;
+    let big_result = big_number.checked_add(1);
+
+    match big_result {
+        Some(r) => println!("result: {}", r),
+        None => println!("Arthemtic overflow detected...")
+    };
+
     let greeting: &str = "Hello, ";
     
     let name: String = input("Get name");
