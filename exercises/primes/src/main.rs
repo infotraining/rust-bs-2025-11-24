@@ -1,8 +1,52 @@
-// TODO
-
 fn main() {
     println!("Primes!!!");
+
+    let primes = n_primes(20);
+
+    for p in primes {
+        println!("Prime: {}", p);
+    }
 }
+
+pub fn is_prime(n: u32) -> bool {
+    if n == 0 || n == 1 {
+        return false;
+    }
+
+    let mut is_prime = true;
+    for d in 2..=((n as f64).sqrt() as u32) {
+        if n % d == 0 {
+            is_prime = false;
+            break;
+        }
+    }
+    is_prime
+}
+
+pub fn n_primes(n: u32) -> Vec<u32> {
+    let mut primes: Vec<u32> = Vec::with_capacity(n as usize);
+    let mut i: u32 = 2;
+
+    while primes.len() < n as usize {
+        if is_prime(i) {
+            primes.push(i);
+        }
+        i += 1;
+    }
+
+    primes
+}
+
+pub fn primes_in_range(range: std::ops::Range<u32>) -> Vec<u32> {
+    let mut primes = Vec::new();
+    for i in range {
+        if is_prime(i) {
+            primes.push(i);
+        }
+    }
+    primes
+}
+
 
 /////////////////////////////////////////////////////////
 #[cfg(test)]
@@ -38,33 +82,30 @@ mod primes_tests {
         assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
 
         let primes = n_primes(20);
-        assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]);
+        assert_eq!(
+            primes,
+            vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]
+        );
     }
 
     #[test]
     fn test_primes_in_range() {
         let primes = primes_in_range(2..100);
 
-        assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
-                                31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
-                                73, 79, 83, 89, 97]);
+        assert_eq!(
+            primes,
+            vec![
+                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,
+                83, 89, 97
+            ]
+        );
     }
 
-    /////////////////////////////////////////////////////////
-    /// Bonus tests for the iterator implementation
-    /// TODO Later
-    /////////////////////////////////////////////////////////
+    // Bonus tests for the iterator implementation
 
-    #[test]
-    fn test_all_primes() {
-        // let primes = all_primes().take(10).collect::<Vec<u32>>();
-        // assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
-    }
-
-    fn main() {
-        // println!("First 100 primes:");
-        // for prime in all_primes().take(100) {
-        //     println!("{}", prime);
-        // }
-    }
+    // #[test]
+    // fn test_all_primes() {
+    //     // let primes = all_primes().take(10).collect::<Vec<u32>>();
+    //     // assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
+    // }
 }
