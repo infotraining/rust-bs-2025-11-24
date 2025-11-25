@@ -17,7 +17,30 @@ fn input(prompt: &str) -> String {
     value.trim().to_string()
 }
 
+mod structs {
+    pub struct Person {
+        pub name: String,
+        pub age: u8,
+    }
+
+    pub fn create_person(name: &str, age: u8) -> Person {
+        let mut p = Person {
+            name: name.to_string(),
+            age,
+        };
+
+        p.age += 1; // Happy birthday!
+        p
+    }
+}
+
+
 fn main() {
+    let person = crate::structs::create_person("Bob", 25);
+
+    println!("Name: {}, Age: {}", person.name, person.age);
+
+
     let big_number = std::i32::MAX;
     
     //big_number += 1;
