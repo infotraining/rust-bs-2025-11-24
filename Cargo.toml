@@ -1,2 +1,4 @@
 [workspace]
-members = ["exercises/primes", "exercises/vector", "hello-world"]
+members = ["exercises/primes", "exercises/vector", "code/hello-world"]
+
+resolver = "3"

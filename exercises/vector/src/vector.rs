@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests_vector2d {
-//     use super::*;
+    use super::*;
 
 //     #[test]
 //     fn explicit_construction() {
@@ -71,12 +71,16 @@ mod tests_vector2d {
 
 //     #[test]
 //     fn unit_vectors() {
-//         let unit_x = Vector2D::UNIT_X;
+//         let unit_x: Vector2D = Vector2D::UNIT_X;
 //         assert!(unit_x.x == 1.0 && unit_x.y == 0.0);
 
-//         let unit_y = Vector2D::UNIT_Y;
+//         let unit_y: Vector2D = Vector2D::UNIT_Y;
 //         assert!(unit_y.x == 0.0 && unit_y.y == 1.0);
 //     }
+
+/*****************************************************/
+/* Operator overloads                                */
+/*****************************************************/
 
 //     #[test]
 //     fn negation() {
