@@ -1,160 +1,193 @@
-use std::fmt::{Debug, Display};
+use std::marker::PhantomData;
+
+struct ListNode<T> {
+    item: T,
+    next: Option<Box<ListNode<T>>>,
+}
 
 pub struct LifoList<T> {
-    // TODO: implement LIFO list using singly linked list
+    head: Option<Box<ListNode<T>>>,
+    size: usize,
 }
 
 impl<T> LifoList<T> {
-    // TODO: implement methods new, empty, size, push, pop
+    pub fn new() -> Self {
+        Self {
+            head: None,
+            size: 0,
+        }
+    }
+
+    pub fn empty(&self) -> bool {
+        self.size == 0
+    }
+
+    pub fn size(&self) -> usize {
+        self.size
+    }
+
+    pub fn push(&mut self, item: T) {
+        self.head = Some(Box::new(ListNode {
+            item,
+            next: self.head.take(),
+        }));
+        self.size += 1;
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        match self.head.take() {
+            None => None,
+            Some(node) => {
+                self.head = node.next;
+                self.size -= 1;
+                Some(node.item)
+            }
+        }
+    }
 }
 
-// Implement Display trait for LifoList
+#[cfg(test)]
+mod tests_lifo_list {
+    use super::*;
+    use rstest::{fixture, rstest};
 
-// Implement IntoIterator trait for LifoList
+    #[fixture]
+    fn lst_with_items() -> LifoList<i32> {
+        let mut lst = LifoList::new();
+        lst.push(1);
+        lst.push(2);
+        lst.push(3);
+        lst
+    }
 
-// Implement IntoIter, Iter and IterMut for LifoList
+    #[test]
+    fn new_list_is_empty() {
+        let lst = LifoList::<i32>::new();
 
-// Implement FromIterator for LifoList
+        assert!(lst.empty());
+    }
 
+    #[test]
+    fn new_list_size_is_zero() {
+        let lst = LifoList::<i32>::new();
 
-// #[cfg(test)]
-// mod tests_lifo_list {
-//     use std::cmp::Ordering;
-//     use super::*;
-//     use rstest::{fixture, rstest};
+        assert_eq!(lst.size(), 0);
+    }
 
-//     #[fixture]
-//     fn lst_with_items() -> LifoList<i32> {
-//         let mut lst = LifoList::new();
-//         lst.push(1);
-//         lst.push(2);
-//         lst.push(3);
-//         lst
-//     }
+    #[test]
+    fn new_list_when_item_pushed_then_list_is_no_longer_empty() {
+        let mut lst = LifoList::<i32>::new();
+        assert!(lst.empty());
 
-//     #[test]
-//     fn new_list_is_empty() {
-//         let lst = LifoList::<i32>::new();
+        lst.push(1);
+        assert!(!lst.empty());
+    }
 
-//         assert!(lst.empty());
-//     }
+    #[test]
+    fn new_list_when_item_pushed_then_size_is_increased() {
+        let mut lst = LifoList::<i32>::new();
+        assert_eq!(lst.size(), 0);
+        lst.push(1);
+        assert_eq!(lst.size(), 1);
+    }
 
-//     #[test]
-//     fn new_list_size_is_zero() {
-//         let lst = LifoList::<i32>::new();
+    #[test]
+    #[allow(non_snake_case)]
+    fn pop_returns_items_in_LIFO_order() {
+        // Arrange
+        let mut lst = LifoList::<i32>::new();
+        lst.push(1);
+        lst.push(2);
+        lst.push(3);
 
-//         assert_eq!(lst.size(), 0);
-//     }
+        // Act / Assert
+        assert_eq!(lst.pop(), Some(3));
+        assert_eq!(lst.pop(), Some(2));
+        assert_eq!(lst.pop(), Some(1));
+        assert_eq!(lst.pop(), None);
+    }
 
-//     #[test]
-//     fn new_list_when_item_pushed_then_list_is_no_longer_empty() {
-//         let mut lst = LifoList::<i32>::new();
-//         assert!(lst.empty());
+    #[rstest]
+    fn when_item_is_popped_size_is_decreased(lst_with_items: LifoList<i32>) {
+        let mut lst = lst_with_items;
+        assert_eq!(lst.size(), 3);
 
-//         lst.push(1);
-//         assert!(!lst.empty());
-//     }
+        lst.pop();
+        assert_eq!(lst.size(), 2);
+        lst.pop();
+        assert_eq!(lst.size(), 1);
+        lst.pop();
+        assert_eq!(lst.size(), 0);
+        lst.pop();
+        assert_eq!(lst.size(), 0);
+    }
 
-//     #[test]
-//     fn new_list_when_item_pushed_then_size_is_increased() {
-//         let mut lst = LifoList::<i32>::new();
-//         assert_eq!(lst.size(), 0);
-//         lst.push(1);
-//         assert_eq!(lst.size(), 1);
-//     }
+    #[rstest]
+    fn when_all_items_are_popped_then_list_is_empty(lst_with_items: LifoList<i32>) {
+        let mut lst = lst_with_items;
+        lst.pop();
+        lst.pop();
+        lst.pop();
+        assert!(lst.empty());
+    }
 
-//     #[rstest]
-//     #[allow(non_snake_case)]
-//     fn pop_returns_items_in_LIFO_order(lst_with_items: LifoList<i32>) {
-//         let mut lst = lst_with_items;
+    //     #[rstest]
+    //     fn list_into_iter(lst_with_items: LifoList<i32>) {
+    //         let lst = lst_with_items;
 
-//         assert_eq!(lst.pop(), Some(3));
-//         assert_eq!(lst.pop(), Some(2));
-//         assert_eq!(lst.pop(), Some(1));
-//         assert_eq!(lst.pop(), None);
-//     }
+    //         let mut it = lst.into_iter();
+    //         assert_eq!(it.next(), Some(3));
+    //         assert_eq!(it.next(), Some(2));
+    //         assert_eq!(it.next(), Some(1));
+    //         assert_eq!(it.next(), None);
+    //     }
 
-//     #[rstest]
-//     fn when_item_is_popped_size_is_decreased(lst_with_items: LifoList<i32>) {
-//         let mut lst = lst_with_items;
-//         assert_eq!(lst.size(), 3);
+    //     #[rstest]
+    //     fn list_for_into_iter(lst_with_items: LifoList<i32>) {
+    //         let mut items = vec![];
+    //         for item in lst_with_items.into_iter() {
+    //             items.push(item);
+    //         }
+    //         assert_eq!(items, vec![3, 2, 1]);
+    //     }
 
-//         lst.pop();
-//         assert_eq!(lst.size(), 2);
-//         lst.pop();
-//         assert_eq!(lst.size(), 1);
-//         lst.pop();
-//         assert_eq!(lst.size(), 0);
-//         lst.pop();
-//         assert_eq!(lst.size(), 0);
-//     }
+    //     #[rstest]
+    //     fn list_iter(lst_with_items: LifoList<i32>) {
+    //         let lst = lst_with_items;
 
-//     #[rstest]
-//     fn when_all_items_are_popped_then_list_is_empty(lst_with_items: LifoList<i32>) {
-//         let mut lst = lst_with_items;
-//         lst.pop();
-//         lst.pop();
-//         lst.pop();
-//         assert!(lst.empty());
-//     }
+    //         let mut it = lst.iter();
+    //         assert_eq!(it.next(), Some(&3));
+    //         assert_eq!(it.next(), Some(&2));
+    //         assert_eq!(it.next(), Some(&1));
+    //         assert_eq!(it.next(), None);
+    //     }
 
-//     #[rstest]
-//     fn list_into_iter(lst_with_items: LifoList<i32>) {
-//         let lst = lst_with_items;
+    //     #[rstest]
+    //     fn list_iter_mut(mut lst_with_items: LifoList<i32>) {
+    //         let mut it = lst_with_items.iter_mut();
+    //         assert_eq!(it.next(), Some(&mut 3));
+    //         assert_eq!(it.next(), Some(&mut 2));
+    //         assert_eq!(it.next(), Some(&mut 1));
+    //         assert_eq!(it.next(), None);
+    //     }
 
-//         let mut it = lst.into_iter();
-//         assert_eq!(it.next(), Some(3));
-//         assert_eq!(it.next(), Some(2));
-//         assert_eq!(it.next(), Some(1));
-//         assert_eq!(it.next(), None);
-//     }
+    //     #[rstest]
+    //     fn list_stress_test() {
+    //         let mut lst = LifoList::new();
 
-//     #[rstest]
-//     fn list_for_into_iter(lst_with_items: LifoList<i32>) {
-//         let mut items = vec![];
-//         for item in lst_with_items.into_iter() {
-//             items.push(item);
-//         }
-//         assert_eq!(items, vec![3, 2, 1]);
-//     }
+    //         let size: usize = 1_000_000;
+    //         for i in 0..size {
+    //             lst.push(i);
+    //         }
+    //     }
 
-//     #[rstest]
-//     fn list_iter(lst_with_items: LifoList<i32>) {
-//         let lst = lst_with_items;
+    //     #[rstest]
+    //     fn list_collect() {
+    //         let lst: LifoList<_> = (1..=5).collect();
 
-//         let mut it = lst.iter();
-//         assert_eq!(it.next(), Some(&3));
-//         assert_eq!(it.next(), Some(&2));
-//         assert_eq!(it.next(), Some(&1));
-//         assert_eq!(it.next(), None);
-//     }
-
-//     #[rstest]
-//     fn list_iter_mut(mut lst_with_items: LifoList<i32>) {
-//         let mut it = lst_with_items.iter_mut();
-//         assert_eq!(it.next(), Some(&mut 3));
-//         assert_eq!(it.next(), Some(&mut 2));
-//         assert_eq!(it.next(), Some(&mut 1));
-//         assert_eq!(it.next(), None);
-//     }
-
-//     #[rstest]
-//     fn list_stress_test() {
-//         let mut lst = LifoList::new();
-
-//         let size: usize = 1_000_000;
-//         for i in 0..size {
-//             lst.push(i);
-//         }
-//     }
-
-//     #[rstest]
-//     fn list_collect() {
-//         let lst: LifoList<_> = (1..=5).collect();
-
-//         assert_eq!(lst.iter().cmp(&vec![5, 4, 3, 2, 1]), Ordering::Equal);
-//     }
-// }
+    //         assert_eq!(lst.iter().cmp(&vec![5, 4, 3, 2, 1]), Ordering::Equal);
+    //     }
+}
 
 // #[cfg(test)]
 // mod tests_lifo_list_display {
