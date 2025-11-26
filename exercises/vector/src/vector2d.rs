@@ -1,23 +1,23 @@
-#[derive(Default, Copy, Clone,PartialEq, Debug)]
-struct Vector2D {
-    x: f32,
-    y: f32,
+#[derive(Default, Copy, Clone, PartialEq, Debug)]
+pub struct Vector2D {
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Vector2D {
-    const ZERO: Vector2D = Vector2D { x: 0.0, y: 0.0 };
-    const UNIT_X: Vector2D = Vector2D { x: 1.0, y: 0.0 };
-    const UNIT_Y: Vector2D = Vector2D { x: 0.0, y: 1.0 };
+    pub const ZERO: Vector2D = Vector2D { x: 0.0, y: 0.0 };
+    pub const UNIT_X: Vector2D = Vector2D { x: 1.0, y: 0.0 };
+    pub const UNIT_Y: Vector2D = Vector2D { x: 0.0, y: 1.0 };
 
-    fn new(x: f32, y: f32) -> Self {
+    pub fn new(x: f32, y: f32) -> Self {
         Vector2D { x, y }
     }
 
-    fn length(&self) -> f32 {
+    pub fn length(&self) -> f32 {
         ((self.x * self.x) + (self.y * self.y)).sqrt()
     }
 
-    fn scale(&self, scale: f32) -> Self {
+    pub fn scale(&self, scale: f32) -> Self {
         Vector2D {
             x: self.x * scale,
             y: self.y * scale,
@@ -32,6 +32,7 @@ impl Vector2D {
     //     }
     // }
 }
+
 
 #[cfg(test)]
 mod tests_vector2d {
