@@ -1,4 +1,3 @@
-// TODO - implement reqiured trats
 use serde::{Deserialize, Serialize};
 use crate::address::Address;
 

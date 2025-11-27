@@ -46,9 +46,65 @@ impl<T> LifoList<T> {
     }
 }
 
+
+// Drop implementation to clean up the list when it goes out of scope
 impl<T> Drop for LifoList<T> {
     fn drop(&mut self) {
         while let Some(_) = self.pop() {}
+    }
+}
+
+// Iterator implementation for LifoList
+pub struct LifoListIterator<T> {
+    node: Option<Box<ListNode<T>>>,
+}
+ 
+impl<T> Iterator for LifoListIterator<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.node.take() {
+            None => None,
+            Some(current_node) => {
+                self.node = current_node.next; // transfer ownership of next node
+                Some(current_node.item)
+            }
+        }
+    }
+}
+ 
+impl<T> IntoIterator for LifoList<T> {
+    type Item = T;
+    type IntoIter = LifoListIterator<T>;
+    
+    fn into_iter(mut self) -> LifoListIterator<T> {
+        LifoListIterator { node: self.head.take() }
+    }
+}
+
+pub struct LifoListIter<'a, T> {
+    next: Option<&'a ListNode<T>>,
+}
+
+impl<'a, T> Iterator for LifoListIter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.next {
+            None => None,
+            Some(node) => {
+                self.next = node.next.as_deref(); // getting reference to next node
+                Some(&node.item)
+            }
+        }
+    }
+}
+
+impl<T> LifoList<T> {
+    pub fn iter(&self) -> LifoListIter<'_, T> {
+        LifoListIter {
+            next: self.head.as_deref(),
+        }
     }
 }
 
@@ -56,6 +112,46 @@ impl<T> Drop for LifoList<T> {
 mod tests_lifo_list {
     use super::*;
     use rstest::{fixture, rstest};
+
+    #[rstest]
+    fn list_into_iter(lst_with_items: LifoList<i32>) {
+        let lst = lst_with_items;
+
+        let mut it = lst.into_iter();
+        assert_eq!(it.next(), Some(3));
+        assert_eq!(it.next(), Some(2));
+        assert_eq!(it.next(), Some(1));
+        assert_eq!(it.next(), None);
+    }
+
+    #[rstest]
+    fn list_for_into_iter(lst_with_items: LifoList<i32>) {
+        let mut items = vec![];
+        for item in lst_with_items {
+            items.push(item);
+        }
+        assert_eq!(items, vec![3, 2, 1]);
+    }
+
+    #[rstest]
+    fn list_iter(lst_with_items: LifoList<i32>) {
+        let lst = lst_with_items;
+
+        let mut it = lst.iter();
+        assert_eq!(it.next(), Some(&3));
+        assert_eq!(it.next(), Some(&2));
+        assert_eq!(it.next(), Some(&1));
+        assert_eq!(it.next(), None);
+    }
+
+    // #[rstest]
+    // fn list_iter_mut(mut lst_with_items: LifoList<i32>) {
+    //     let mut it = lst_with_items.iter_mut();
+    //     assert_eq!(it.next(), Some(&mut 3));
+    //     assert_eq!(it.next(), Some(&mut 2));
+    //     assert_eq!(it.next(), Some(&mut 1));
+    //     assert_eq!(it.next(), None);
+    // }
 
     #[fixture]
     fn lst_with_items() -> LifoList<i32> {
@@ -136,46 +232,6 @@ mod tests_lifo_list {
         lst.pop();
         assert!(lst.empty());
     }
-
-    //     #[rstest]
-    //     fn list_into_iter(lst_with_items: LifoList<i32>) {
-    //         let lst = lst_with_items;
-
-    //         let mut it = lst.into_iter();
-    //         assert_eq!(it.next(), Some(3));
-    //         assert_eq!(it.next(), Some(2));
-    //         assert_eq!(it.next(), Some(1));
-    //         assert_eq!(it.next(), None);
-    //     }
-
-    //     #[rstest]
-    //     fn list_for_into_iter(lst_with_items: LifoList<i32>) {
-    //         let mut items = vec![];
-    //         for item in lst_with_items.into_iter() {
-    //             items.push(item);
-    //         }
-    //         assert_eq!(items, vec![3, 2, 1]);
-    //     }
-
-    //     #[rstest]
-    //     fn list_iter(lst_with_items: LifoList<i32>) {
-    //         let lst = lst_with_items;
-
-    //         let mut it = lst.iter();
-    //         assert_eq!(it.next(), Some(&3));
-    //         assert_eq!(it.next(), Some(&2));
-    //         assert_eq!(it.next(), Some(&1));
-    //         assert_eq!(it.next(), None);
-    //     }
-
-    //     #[rstest]
-    //     fn list_iter_mut(mut lst_with_items: LifoList<i32>) {
-    //         let mut it = lst_with_items.iter_mut();
-    //         assert_eq!(it.next(), Some(&mut 3));
-    //         assert_eq!(it.next(), Some(&mut 2));
-    //         assert_eq!(it.next(), Some(&mut 1));
-    //         assert_eq!(it.next(), None);
-    //     }
 
     #[rstest]
     fn list_stress_test() {
