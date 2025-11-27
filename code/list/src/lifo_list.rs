@@ -46,6 +46,12 @@ impl<T> LifoList<T> {
     }
 }
 
+impl<T> Drop for LifoList<T> {
+    fn drop(&mut self) {
+        while let Some(_) = self.pop() {}
+    }
+}
+
 #[cfg(test)]
 mod tests_lifo_list {
     use super::*;
@@ -171,15 +177,15 @@ mod tests_lifo_list {
     //         assert_eq!(it.next(), None);
     //     }
 
-    //     #[rstest]
-    //     fn list_stress_test() {
-    //         let mut lst = LifoList::new();
+    #[rstest]
+    fn list_stress_test() {
+        let mut lst = LifoList::new();
 
-    //         let size: usize = 1_000_000;
-    //         for i in 0..size {
-    //             lst.push(i);
-    //         }
-    //     }
+        let size: usize = 1_000_000;
+        for i in 0..size {
+            lst.push(i);
+        }
+    }
 
     //     #[rstest]
     //     fn list_collect() {

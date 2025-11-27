@@ -119,20 +119,20 @@ mod tests_vector2d {
     /* Operator overloads                                */
     /*****************************************************/
 
-    //     #[test]
-    //     fn negation() {
-    //         let v = Vector2D::new(1.0, 2.0);
-    //         let neg_v = -v;
-    //         assert_eq!(neg_v, Vector2D::new(-1.0, -2.0));
-    //     }
+        #[test]
+        fn negation() {
+            let v = Vector2D::new(1.0, 2.0);
+            let neg_v = -v;
+            assert_eq!(neg_v, Vector2D::new(-1.0, -2.0));
+        }
 
-    //     #[test]
-    //     fn addition() {
-    //         let v1 = Vector2D::new(1.0, 2.0);
-    //         let v2 = Vector2D::new(3.0, 4.0);
-    //         let v3 = v1 + v2;
-    //         assert_eq!(v3, Vector2D::new(4.0, 6.0));
-    //     }
+        #[test]
+        fn addition() {
+            let v1 = Vector2D::new(1.0, 2.0);
+            let v2 = Vector2D::new(3.0, 4.0);
+            let v3 = v1 + v2;
+            assert_eq!(v3, Vector2D::new(4.0, 6.0));
+        }
 
     //     #[test]
     //     fn subtraction() {
