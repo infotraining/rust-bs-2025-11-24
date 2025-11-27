@@ -1,4 +1,4 @@
 [workspace]
-members = ["exercises/primes", "exercises/vector", "code/hello-world", "code/list"]
+members = ["exercises/primes", "exercises/vector", "code/hello-world", "code/list", "code/json-data"]
 
 resolver = "3"
